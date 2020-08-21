@@ -152,6 +152,7 @@ namespace FirstBankOfSuncoast
             bool running = true;
             while (running == true)
             {
+                Console.WriteLine("\r\n What would you like to do, Gavin:\r\n");
                 Console.WriteLine("{ 1 }" + "Deposit in Savings");
                 Console.WriteLine("{ 2 }" + "Withdraw Savings");
                 Console.WriteLine("{ 3 }" + "Deposit in Checking");
@@ -218,8 +219,68 @@ namespace FirstBankOfSuncoast
                         Console.Clear();
                         break;
 
+                    case 3:
+                        Console.Clear();
+                        Console.WriteLine("Please specify the amount you want to deposit in your checking account:");
+                        var amountDC = GetTransactionAmount();
+                        if (amountDC >= 0.01)
+                        {
+                            gavinsTransactions.Add(new Transaction()
+                            {
+                                amount = amountDC,
+                                checkingOrSavings = "C",
+                                withdrawalOrDeposit = "D",
+                            });
+                            Console.WriteLine($"Deposit has been accepted and processed!\r\n Your checking balance is {AccountBalance("C", gavinsTransactions)}");
+                        }
+                        Console.WriteLine("\r\nReturning back to menu. \r\nPress enter to continue.");
+                        Console.ReadLine();
+                        Console.Clear();
+                        break;
 
+                    case 4:
+                        int case4Running = 1;
+                        while (case4Running == 1)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Please specify the amount you want to withdraw in your checking account:");
+                            var amountWS = GetTransactionAmount();
+                            if (amountWS >= 0.01)
+                            {
+                                if (amountWS > AccountBalance("S", gavinsTransactions))
+                                {
+                                    Console.WriteLine($"Transaction Denied. The specified withdrawal of {amountWS}\r\n is greater than your checking balance of {AccountBalance("C", gavinsTransactions)}");
+                                    Console.WriteLine("\r\nWould you like to:\r\n{ 1 } try a different amount\r\n{ 2 } return back to the menu");
+                                    Console.WriteLine("\r\n Choices: {1} {2}");
+                                    case4Running = CheckUserChoice(2, 3);
+                                }
+                                else
+                                {
+                                    gavinsTransactions.Add(new Transaction()
+                                    {
+                                        amount = amountWS,
+                                        checkingOrSavings = "C",
+                                        withdrawalOrDeposit = "W",
+                                    });
+                                    Console.WriteLine($"Withdrawal has been accepted and processed!\r\n Your Checking balance is {AccountBalance("C", gavinsTransactions)}");
+                                    case4Running = 2;
+                                }
+                            }
+                            else
+                                case4Running = 2;
+                        }
+                        Console.WriteLine("\r\nReturning back to menu. \r\nPress enter to continue.");
+                        Console.ReadLine();
+                        Console.Clear();
+                        break;
 
+                    case 5:
+                        Console.Clear();
+                        Console.WriteLine($"Your Savings balance is {AccountBalance("S", gavinsTransactions)}.\r\nYour Checking balance is {AccountBalance("C", gavinsTransactions)}.");
+                        Console.WriteLine("\r\nReturning back to menu. \r\nPress enter to continue.");
+                        Console.ReadLine();
+                        Console.Clear();
+                        break;
 
                     case 6:
                         running = false;
