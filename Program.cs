@@ -73,16 +73,6 @@ namespace FirstBankOfSuncoast
             }
             return amount;
         }
-        static bool CheckBounce(string cOrS, List<Transaction> balance, double amount)
-        {
-            var total = AccountBalance(cOrS, balance);
-            if (total >= amount)
-            {
-                return true;
-            }
-            else
-                return false;
-        }
         static int CheckUserChoice(int options, int tryinput)
         {
             int choice = 1000;
@@ -114,7 +104,6 @@ namespace FirstBankOfSuncoast
             Console.Clear();
             Console.WriteLine("Welcome Gavin to the First Bank of Suncoast! \r\n\r\n\r\n");
             var gavinsTransactions = new List<Transaction>();
-
             if (File.Exists("gavinsTransactions.csv"))
             {
                 var fileName = "gavinsTransactions.csv";
@@ -123,44 +112,6 @@ namespace FirstBankOfSuncoast
                 gavinsTransactions = csvReader.GetRecords<Transaction>().ToList();
                 reader.Close();
             }
-            // stream in Gavin's CSV file and populate List, for now, we will use below dummy data
-            /*gavinsTransactions.Add(new Transaction()
-            {
-                amount = 36,
-                checkingOrSavings = "C",
-                withdrawalOrDeposit = "D",
-            });
-            gavinsTransactions.Add(new Transaction()
-            {
-                amount = 34,
-                checkingOrSavings = "C",
-                withdrawalOrDeposit = "D",
-            });
-            gavinsTransactions.Add(new Transaction()
-            {
-                amount = 35,
-                checkingOrSavings = "C",
-                withdrawalOrDeposit = "W",
-            });
-            gavinsTransactions.Add(new Transaction()
-            {
-                amount = 26,
-                checkingOrSavings = "S",
-                withdrawalOrDeposit = "D",
-            });
-            gavinsTransactions.Add(new Transaction()
-            {
-                amount = 24,
-                checkingOrSavings = "S",
-                withdrawalOrDeposit = "D",
-            });
-            gavinsTransactions.Add(new Transaction()
-            {
-                amount = 25,
-                checkingOrSavings = "S",
-                withdrawalOrDeposit = "W",
-            });*/
-
             bool running = true;
             while (running == true)
             {
@@ -169,11 +120,11 @@ namespace FirstBankOfSuncoast
                 Console.WriteLine("{ 2 }" + "Withdraw Savings");
                 Console.WriteLine("{ 3 }" + "Deposit in Checking");
                 Console.WriteLine("{ 4 }" + "Withdraw Checking");
-                Console.WriteLine("{ 5 }" + "View Savings and Checking Account Balance");
-                Console.WriteLine("{ 6 }" + "Quit");
-                Console.WriteLine("\r\n Please choose an action for this session:\r\n {1} {2} {3} {4} {5} {6}");
-                int choice = CheckUserChoice(6, 1);
-
+                Console.WriteLine("{ 5 }" + "View Savings Transactions And Balance");
+                Console.WriteLine("{ 6 }" + "View Checking Transactions And Balance");
+                Console.WriteLine("{ 7 }" + "Quit");
+                Console.WriteLine("\r\n Please choose an action for this session:\r\n {1} {2} {3} {4} {5} {6} {7}");
+                int choice = CheckUserChoice(7, 1);
                 switch (choice)
                 {
                     case 1:
@@ -194,7 +145,6 @@ namespace FirstBankOfSuncoast
                         Console.ReadLine();
                         Console.Clear();
                         break;
-
                     case 2:
                         int case2Running = 1;
                         while (case2Running == 1)
@@ -230,7 +180,6 @@ namespace FirstBankOfSuncoast
                         Console.ReadLine();
                         Console.Clear();
                         break;
-
                     case 3:
                         Console.Clear();
                         Console.WriteLine("Please specify the amount you want to deposit in your checking account:");
@@ -249,7 +198,6 @@ namespace FirstBankOfSuncoast
                         Console.ReadLine();
                         Console.Clear();
                         break;
-
                     case 4:
                         int case4Running = 1;
                         while (case4Running == 1)
@@ -285,16 +233,49 @@ namespace FirstBankOfSuncoast
                         Console.ReadLine();
                         Console.Clear();
                         break;
-
                     case 5:
                         Console.Clear();
-                        Console.WriteLine($"Your Savings balance is {AccountBalance("S", gavinsTransactions)}.\r\nYour Checking balance is {AccountBalance("C", gavinsTransactions)}.");
+                        var savingTransactions = new List<Transaction>();
+                        savingTransactions.AddRange(gavinsTransactions.Where(gavinsTransactions => gavinsTransactions.checkingOrSavings == "S"));
+                        Console.WriteLine(" - Savings Transactions -");
+                        Console.WriteLine("Transaction Type_________________Amount");
+                        foreach (Transaction Transaction in savingTransactions)
+                        {
+                            if (Transaction.withdrawalOrDeposit == "W")
+                            {
+                                Console.WriteLine($"Withdrawal - - - - - - - - - - -${Transaction.amount}");
+                            }
+                            else
+                                Console.WriteLine($"Deposit - - - - - - - - - - - - ${Transaction.amount}");
+                        }
+                        Console.WriteLine("__________________________________________");
+                        Console.WriteLine($"Current Balance - - - - - - - - &{AccountBalance("S", gavinsTransactions)}");
                         Console.WriteLine("\r\nReturning back to menu. \r\nPress enter to continue.");
                         Console.ReadLine();
                         Console.Clear();
                         break;
-
                     case 6:
+                        Console.Clear();
+                        var checkingTransactions = new List<Transaction>();
+                        checkingTransactions.AddRange(gavinsTransactions.Where(gavinsTransactions => gavinsTransactions.checkingOrSavings == "C"));
+                        Console.WriteLine(" - Checking Transactions -");
+                        Console.WriteLine("Transaction Type_________________Amount");
+                        foreach (Transaction Transaction in checkingTransactions)
+                        {
+                            if (Transaction.withdrawalOrDeposit == "W")
+                            {
+                                Console.WriteLine($"Withdrawal - - - - - - - - - - -${Transaction.amount}");
+                            }
+                            else
+                                Console.WriteLine($"Deposit - - - - - - - - - - - - ${Transaction.amount}");
+                        }
+                        Console.WriteLine("__________________________________________");
+                        Console.WriteLine($"Current Balance - - - - - - - - &{AccountBalance("C", gavinsTransactions)}");
+                        Console.WriteLine("\r\nReturning back to menu. \r\nPress enter to continue.");
+                        Console.ReadLine();
+                        Console.Clear();
+                        break;
+                    case 7:
                         running = false;
                         break;
                 }
@@ -302,15 +283,6 @@ namespace FirstBankOfSuncoast
                 var csvWriter = new CsvWriter(fileWriter, CultureInfo.InvariantCulture);
                 csvWriter.WriteRecords(gavinsTransactions);
                 fileWriter.Close();
-
-
-
-
-
-
-
-
-
             }
             Console.Clear();
             Console.WriteLine("Session Ended. Thank you for using First Bank of Suncoast!");
