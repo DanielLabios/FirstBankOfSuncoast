@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using CsvHelper;
 
 namespace FirstBankOfSuncoast
 {
@@ -111,8 +114,17 @@ namespace FirstBankOfSuncoast
             Console.Clear();
             Console.WriteLine("Welcome Gavin to the First Bank of Suncoast! \r\n\r\n\r\n");
             var gavinsTransactions = new List<Transaction>();
+
+            if (File.Exists("gavinsTransactions.csv"))
+            {
+                var fileName = "gavinsTransactions.csv";
+                var reader = new StreamReader(fileName);
+                var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+                gavinsTransactions = csvReader.GetRecords<Transaction>().ToList();
+                reader.Close();
+            }
             // stream in Gavin's CSV file and populate List, for now, we will use below dummy data
-            gavinsTransactions.Add(new Transaction()
+            /*gavinsTransactions.Add(new Transaction()
             {
                 amount = 36,
                 checkingOrSavings = "C",
@@ -147,7 +159,7 @@ namespace FirstBankOfSuncoast
                 amount = 25,
                 checkingOrSavings = "S",
                 withdrawalOrDeposit = "W",
-            });
+            });*/
 
             bool running = true;
             while (running == true)
@@ -247,7 +259,7 @@ namespace FirstBankOfSuncoast
                             var amountWS = GetTransactionAmount();
                             if (amountWS >= 0.01)
                             {
-                                if (amountWS > AccountBalance("S", gavinsTransactions))
+                                if (amountWS > AccountBalance("C", gavinsTransactions))
                                 {
                                     Console.WriteLine($"Transaction Denied. The specified withdrawal of {amountWS}\r\n is greater than your checking balance of {AccountBalance("C", gavinsTransactions)}");
                                     Console.WriteLine("\r\nWould you like to:\r\n{ 1 } try a different amount\r\n{ 2 } return back to the menu");
@@ -286,7 +298,10 @@ namespace FirstBankOfSuncoast
                         running = false;
                         break;
                 }
-
+                var fileWriter = new StreamWriter("gavinsTransactions.csv");
+                var csvWriter = new CsvWriter(fileWriter, CultureInfo.InvariantCulture);
+                csvWriter.WriteRecords(gavinsTransactions);
+                fileWriter.Close();
 
 
 
