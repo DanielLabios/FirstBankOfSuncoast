@@ -15,6 +15,9 @@ namespace FirstBankOfSuncoast
     }
     class Program
     {
+
+        // Takes the list of transactions and input for either checking or savings. It then outputs the balance of the account type.
+
         static double AccountBalance(string cOrS, List<Transaction> history)
         {
             var accountType = new List<Transaction>();
@@ -33,6 +36,12 @@ namespace FirstBankOfSuncoast
             }
             return total;
         }
+
+        // Asks for amount from user. If it can't parse it to double, user try agains up to 5 times before canceling transaction.
+        // If user enters a negative amount, user is told to input again in positive format.
+        // An input of 0 cancels the Transaction.
+        // To cancel the transaction, -1 is returned which cues the algorithm to quit back to menu without making a transaction.
+
         static double GetTransactionAmount()
         {
             double amount = 999999999;
@@ -73,6 +82,11 @@ namespace FirstBankOfSuncoast
             }
             return amount;
         }
+
+        // Prompts user to make a choice from the menu(s) in question.
+        // input the amount of options to display and the amount of tries before user is returned back to menu.
+        // choice = 2 brings them back to menu. If at the menu already, tryinput is == 1.
+
         static int CheckUserChoice(int options, int tryinput)
         {
             int choice = 1000;
@@ -101,6 +115,9 @@ namespace FirstBankOfSuncoast
         }
         static void Main(string[] args)
         {
+
+            // Welcome and Loads up CSV file.
+
             Console.Clear();
             Console.WriteLine("Welcome Gavin to the First Bank of Suncoast! \r\n\r\n\r\n");
             var gavinsTransactions = new List<Transaction>();
@@ -112,6 +129,9 @@ namespace FirstBankOfSuncoast
                 gavinsTransactions = csvReader.GetRecords<Transaction>().ToList();
                 reader.Close();
             }
+
+            // Displays Menu
+
             bool running = true;
             while (running == true)
             {
@@ -127,6 +147,9 @@ namespace FirstBankOfSuncoast
                 int choice = CheckUserChoice(7, 1);
                 switch (choice)
                 {
+
+                    // Deposit in Savings
+
                     case 1:
                         Console.Clear();
                         Console.WriteLine("Please specify the amount you want to deposit in your savings account:");
@@ -145,6 +168,9 @@ namespace FirstBankOfSuncoast
                         Console.ReadLine();
                         Console.Clear();
                         break;
+
+                    // Withdraw in Savings case2Running is loop control switch
+
                     case 2:
                         int case2Running = 1;
                         while (case2Running == 1)
@@ -154,6 +180,9 @@ namespace FirstBankOfSuncoast
                             var amountWS = GetTransactionAmount();
                             if (amountWS >= 0.01)
                             {
+
+                                // Denies user transaction if amount to withdraw exceeds balance. Asks user option to try again or return to menu
+
                                 if (amountWS > AccountBalance("S", gavinsTransactions))
                                 {
                                     Console.WriteLine($"Transaction Denied. The specified withdrawal of {amountWS}\r\n is greater than your savings balance of {AccountBalance("S", gavinsTransactions)}");
@@ -180,6 +209,9 @@ namespace FirstBankOfSuncoast
                         Console.ReadLine();
                         Console.Clear();
                         break;
+
+                    // Deposit in Checking
+
                     case 3:
                         Console.Clear();
                         Console.WriteLine("Please specify the amount you want to deposit in your checking account:");
@@ -198,6 +230,9 @@ namespace FirstBankOfSuncoast
                         Console.ReadLine();
                         Console.Clear();
                         break;
+
+                    // Withdraw in Checking
+
                     case 4:
                         int case4Running = 1;
                         while (case4Running == 1)
@@ -233,6 +268,9 @@ namespace FirstBankOfSuncoast
                         Console.ReadLine();
                         Console.Clear();
                         break;
+
+                    // List of savings transactions displayed & balance is displayed.
+
                     case 5:
                         Console.Clear();
                         var savingTransactions = new List<Transaction>();
@@ -254,6 +292,9 @@ namespace FirstBankOfSuncoast
                         Console.ReadLine();
                         Console.Clear();
                         break;
+
+                    // List of checking transactions displayed & balance is displayed.
+
                     case 6:
                         Console.Clear();
                         var checkingTransactions = new List<Transaction>();
@@ -279,11 +320,17 @@ namespace FirstBankOfSuncoast
                         running = false;
                         break;
                 }
+
+                // After every transaction (or failed transaction) transaction is recorded in csv file
+
                 var fileWriter = new StreamWriter("gavinsTransactions.csv");
                 var csvWriter = new CsvWriter(fileWriter, CultureInfo.InvariantCulture);
                 csvWriter.WriteRecords(gavinsTransactions);
                 fileWriter.Close();
             }
+
+            // outside while loop Goodbye
+
             Console.Clear();
             Console.WriteLine("Session Ended. Thank you for using First Bank of Suncoast!");
 
